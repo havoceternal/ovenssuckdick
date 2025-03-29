@@ -2341,7 +2341,6 @@ G2L["107"]["AspectRatio"] = 13.9463;
 
 -- StarterGui.oldversion.MainFrame.ViewFrame.Settings.MainSettings.STANDNAME.TARGET
 G2L["108"] = Instance.new("TextBox", G2L["106"]);
-G2L["108"]["CursorPosition"] = -1;
 G2L["108"]["Name"] = [[TARGET]];
 G2L["108"]["PlaceholderColor3"] = Color3.fromRGB(116, 0, 0);
 G2L["108"]["BorderSizePixel"] = 0;
@@ -6853,7 +6852,7 @@ local function C_105()
 			StandGLOBAL.StandName = ""
 			return
 		else
-			StandGLOBAL.StandName = StandNameTextBox.Text
+			StandGLOBAL.StandName = tostring(StandNameTextBox.Text)
 		end
 	end)
 end;
@@ -8237,110 +8236,116 @@ local function C_270()
 			local Speaker = chattable["FromSpeaker"]
 			if Speaker == HAVOC.Stand.MainAccount or Speaker == HAVOC.Stand.TempOwner then
 				local Message = chattable["Message"]
-				local Message = chattable["Message"]
-				if Message and (Message:lower():sub(1, #HAVOC.Stand.StandName + #Prefix) == HAVOC.Stand.StandName..Prefix or string.sub(Message:lower(), 1, #Prefix) == Prefix) then
-					local Command = string.sub(Message, #Prefix + 1)
-					if Command then
-						local Args = {}
-						for arg in string.gmatch(Command, "%S+") do
-							table.insert(Args, arg:lower())
-						end
-						if Args[1] == "s" then
-							if HAVOC.Stand.TempOwner ~= "" then
-								if Speaker == HAVOC.Stand.MainAccount then
-									HAVOC.Stand.TempOwner = ""
-									HAVOC.sReturn = false
-								end
-							end
-							if not StandGLOBAL.sReturn then
-								StandGLOBAL.OrbitStand.OrbitEnabled = false
-								StandGLOBAL.KillAuraStand = false
-								StandGLOBAL.sReturn = true
-							else
+				local MessageLower = Message:lower()
+
+				local StandPrefix = HAVOC.Stand.StandName .. Prefix
+				local HasStandPrefix = MessageLower:sub(1, #StandPrefix) == StandPrefix
+
+				local IsGlobalCommand = not HasStandPrefix and MessageLower:sub(1, #Prefix) == Prefix
+
+				if HasStandPrefix or IsGlobalCommand then
+					local CommandStart = HasStandPrefix and (#StandPrefix + 1) or (#Prefix + 1)
+					local Command = MessageLower:sub(CommandStart)
+
+					local Args = {}
+					for arg in string.gmatch(Command, "%S+") do
+						table.insert(Args, arg:lower())
+					end
+
+					if Args[1] == "s" then
+						if HAVOC.Stand.TempOwner ~= "" then
+							if Speaker == HAVOC.Stand.MainAccount then
+								StandGLOBAL.TempOwner = ""
 								StandGLOBAL.sReturn = false
 							end
-						elseif Args[1] == "orbit" or Args[1] == "gauto" or Args[1] == "auto" then
-							if #Args >= 2 then
-								local Target = Args[2]
-								local foundPlayer = findClosestMatchingPlayer(Target)
-								if foundPlayer and foundPlayer.Name ~= HAVOC.Stand.MainAccount then
-									if not StandGLOBAL.OrbitStand.OrbitEnabled and foundPlayer then
-										StandGLOBAL.sReturn = false
-										StandGLOBAL.KillAuraStand = false
-										StandGLOBAL.OrbitStand.OrbitEnabled = true
-										StandGLOBAL.OrbitStand.Target = foundPlayer
-									else
-										StandGLOBAL.OrbitStand.OrbitEnabled = false
-										StandGLOBAL.OrbitStand.Target = nil
-									end
-								end
-							else
-								StandGLOBAL.OrbitStand.OrbitEnabled = false
-								StandGLOBAL.OrbitStand.Target = nil
-							end
-						elseif Args[1] == "guntype" or Args[1] == "gtype" then
-							if #Args >= 2 then
-								local GunName = Args[2]
-								StandGLOBAL.GunType = GunName:lower()
-								print(GunName:lower())
-							end
-						elseif Args[1] == "give" then
-							if #Args >= 2 then
-								local giveTo = Args[2]
-								local foundPlayer = findClosestMatchingPlayer(giveTo)
-								if foundPlayer then
-									StandGLOBAL.OrbitStand.OrbitEnabled = false
+						end
+						if not StandGLOBAL.sReturn then
+							StandGLOBAL.OrbitStand.OrbitEnabled = false
+							StandGLOBAL.KillAuraStand = false
+							StandGLOBAL.sReturn = true
+						else
+							StandGLOBAL.sReturn = false
+						end
+					elseif Args[1] == "orbit" or Args[1] == "gauto" or Args[1] == "auto" then
+						if #Args >= 2 then
+							local Target = Args[2]
+							local foundPlayer = findClosestMatchingPlayer(Target)
+							if foundPlayer and foundPlayer.Name ~= HAVOC.Stand.MainAccount then
+								if not StandGLOBAL.OrbitStand.OrbitEnabled and foundPlayer then
 									StandGLOBAL.sReturn = false
-									StandGLOBAL.TempOwner = foundPlayer
+									StandGLOBAL.KillAuraStand = false
+									StandGLOBAL.OrbitStand.OrbitEnabled = true
+									StandGLOBAL.OrbitStand.Target = foundPlayer
+								else
+									StandGLOBAL.OrbitStand.OrbitEnabled = false
+									StandGLOBAL.OrbitStand.Target = nil
 								end
 							end
-						elseif Args[1] == "killaura" then
-							if StandGLOBAL.KillAuraStand then
+						else
+							StandGLOBAL.OrbitStand.OrbitEnabled = false
+							StandGLOBAL.OrbitStand.Target = nil
+						end
+					elseif Args[1] == "guntype" or Args[1] == "gtype" then
+						if #Args >= 2 then
+							local GunName = Args[2]
+							StandGLOBAL.GunType = GunName:lower()
+							print(GunName:lower())
+						end
+					elseif Args[1] == "give" then
+						if #Args >= 2 then
+							local giveTo = Args[2]
+							local foundPlayer = findClosestMatchingPlayer(giveTo)
+							if foundPlayer then
 								StandGLOBAL.OrbitStand.OrbitEnabled = false
-								StandGLOBAL.KillAuraStand = false
-							else
-								StandGLOBAL.KillAuraStand = true
+								StandGLOBAL.sReturn = false
+								StandGLOBAL.TempOwner = foundPlayer
 							end
-						elseif Args[1] == "kfriendcheck" then
-							if #Args >= 2 then
-								local status = Args[2]
-								if status == "true" then
-									StandGLOBAL.StandKillAuraFriendCheck = true
-								elseif status == "false" then
-									StandGLOBAL.StandKillAuraFriendCheck = false
-								end
-							else
-								StandGLOBAL.StandKillAuraFriendCheck = not StandGLOBAL.StandKillAuraFriendCheck
+						end
+					elseif Args[1] == "killaura" then
+						if StandGLOBAL.KillAuraStand then
+							StandGLOBAL.KillAuraStand = false
+						else
+							StandGLOBAL.KillAuraStand = true
+						end
+					elseif Args[1] == "kfriendcheck" then
+						if #Args >= 2 then
+							local status = Args[2]
+							if status == "true" then
+								StandGLOBAL.StandKillAuraFriendCheck = true
+							elseif status == "false" then
+								StandGLOBAL.StandKillAuraFriendCheck = false
 							end
-						elseif Args[1] == "whitelist" then
-							if #Args >= 2 then
-								local whitelistTable = {}
-								for i = 2, #Args do
-									local playerName = Args[i]
-									local foundPlayer = findClosestMatchingPlayer(playerName)
-									if foundPlayer then
-										table.insert(whitelistTable, foundPlayer)
-									end
+						else
+							StandGLOBAL.StandKillAuraFriendCheck = not StandGLOBAL.StandKillAuraFriendCheck
+						end
+					elseif Args[1] == "whitelist" then
+						if #Args >= 2 then
+							local whitelistTable = {}
+							for i = 2, #Args do
+								local playerName = Args[i]
+								local foundPlayer = findClosestMatchingPlayer(playerName)
+								if foundPlayer then
+									table.insert(whitelistTable, foundPlayer)
 								end
-								HAVOC.Stand.Whitelist = whitelistTable
 							end
-						elseif Args[1] == "blacklist" then
-							if #Args >= 2 then
-								local blacklistTable = {}
-								for i = 2, #Args do
-									local playerName = Args[i]
-									local foundPlayer = findClosestMatchingPlayer(playerName)
-									if foundPlayer then
-										table.insert(blacklistTable, foundPlayer)
-									end
+							HAVOC.Stand.Whitelist = whitelistTable
+						end
+					elseif Args[1] == "blacklist" then
+						if #Args >= 2 then
+							local blacklistTable = {}
+							for i = 2, #Args do
+								local playerName = Args[i]
+								local foundPlayer = findClosestMatchingPlayer(playerName)
+								if foundPlayer then
+									table.insert(blacklistTable, foundPlayer)
 								end
-								HAVOC.Stand.Blacklist = blacklistTable
 							end
-						elseif Args[1] == "clear" then
-							if #Args >= 2 then
-								if StandGLOBAL[Args[2]] and typeof(StandGLOBAL[Args[2]]) == 'table' then
-									StandGLOBAL[Args[2]] = {}
-								end
+							HAVOC.Stand.Blacklist = blacklistTable
+						end
+					elseif Args[1] == "clear" then
+						if #Args >= 2 then
+							if StandGLOBAL[Args[2]] and typeof(StandGLOBAL[Args[2]]) == 'table' then
+								StandGLOBAL[Args[2]] = {}
 							end
 						end
 					end
