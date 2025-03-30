@@ -8201,12 +8201,12 @@ local function C_270()
 	end
 
 	RunService.RenderStepped:Connect(function()
-		local gun = GetTool33()
-		local KOValue = player.Character:WaitForChild('BodyEffects')['K.O'].Value
-		if gun and KOValue ~= true then
-			game:GetService("ReplicatedStorage"):FindFirstChild("MainEvent"):FireServer("Reload",gun)
-		end
 		if HAVOC.Stand.StandMode then
+			local gun = GetTool33()
+			local KOValue = player.Character:WaitForChild('BodyEffects')['K.O'].Value
+			if gun and KOValue ~= true then
+				game:GetService("ReplicatedStorage"):FindFirstChild("MainEvent"):FireServer("Reload",gun)
+			end
 			local MainAccountCharacter = workspace:FindFirstChild(StandGLOBAL.MainAccount, true)
 			if HAVOC.Stand.TempOwner ~= "" then
 				MainAccountCharacter = workspace:FindFirstChild(StandGLOBAL.TempOwner, true)
@@ -8495,61 +8495,63 @@ local function C_271()
 	end
 
 	RunService.RenderStepped:Connect(function()
-		if HAVOC.Stand.GunType == "rifle" then
-			gunAmmo = rifleAmmo
-			gunModel = rifleModel
-		elseif HAVOC.Stand.GunType == "aug" then
-			gunAmmo = augAmmo
-			gunModel = augModel
-		end
-		if OrbitGLOBAL.OrbitEnabled then
-			HAVOC.Stand.sReturn = false
-			local gun = GetGun()
-			if gun and Character and Character:FindFirstChild("BodyEffects") and Character.BodyEffects:FindFirstChild("K.O") and Character.BodyEffects:FindFirstChild("Dead") then
-				getTargetCFrame()
-				if targetPlayer and targetPlayer.Character then
-					if targetPlayer and not targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.Stand.isBusy and not HAVOC.GettingArmor then
-						orbitAround()
-						ShootGun(gun)
-					end
-
-					if targetPlayer and targetPlayer.Character and InventoryFolder[gun.Name].Value == "0" and gun.Ammo.Value == 0 and OrbitGLOBAL.OrbitEnabled and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value then
-						HAVOC.Stand.isBusy = true
-						while targetPlayer and targetPlayer.Character and InventoryFolder[gun.Name].Value == "0" and gun.Ammo.Value == 0 and OrbitGLOBAL.OrbitEnabled and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value do
-							Purchase(gunAmmo)
-							task.wait(0.1)
+		if HAVOC.Stand.StandMode then
+			if HAVOC.Stand.GunType == "rifle" then
+				gunAmmo = rifleAmmo
+				gunModel = rifleModel
+			elseif HAVOC.Stand.GunType == "aug" then
+				gunAmmo = augAmmo
+				gunModel = augModel
+			end
+			if OrbitGLOBAL.OrbitEnabled then
+				HAVOC.Stand.sReturn = false
+				local gun = GetGun()
+				if gun and Character and Character:FindFirstChild("BodyEffects") and Character.BodyEffects:FindFirstChild("K.O") and Character.BodyEffects:FindFirstChild("Dead") then
+					getTargetCFrame()
+					if targetPlayer and targetPlayer.Character then
+						if targetPlayer and not targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.Stand.isBusy and not HAVOC.GettingArmor then
+							orbitAround()
+							ShootGun(gun)
 						end
-						GetGun()
-						camera.CameraSubject = Character
-						HAVOC.Stand.isBusy = false
-					end
 
-					if not HAVOC.Stand.isBusy and targetPlayer and targetPlayer.Character and gun.Ammo.Value == 0 and tonumber(InventoryFolder[gun.Name].Value) > 0 and OrbitGLOBAL.OrbitEnabled and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.GettingArmor then
-						HAVOC.Stand.isBusy = true
-						while targetPlayer and targetPlayer.Character and gun.Ammo.Value == 0 and tonumber(InventoryFolder[gun.Name].Value) > 0 and OrbitGLOBAL.OrbitEnabled and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.GettingArmor do
-							void()
-							task.wait()
-						end
-						HAVOC.Stand.isBusy = false
-					end
-					if targetPlayer and targetPlayer.Character and targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.Stand.isBusy and not HAVOC.GettingArmor then
-						if targetPlayer and targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('Dead').Value then
+						if targetPlayer and targetPlayer.Character and InventoryFolder[gun.Name].Value == "0" and gun.Ammo.Value == 0 and OrbitGLOBAL.OrbitEnabled and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value then
 							HAVOC.Stand.isBusy = true
-							while targetPlayer and targetPlayer.Character and OrbitGLOBAL.OrbitEnabled and targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.GettingArmor do
+							while targetPlayer and targetPlayer.Character and InventoryFolder[gun.Name].Value == "0" and gun.Ammo.Value == 0 and OrbitGLOBAL.OrbitEnabled and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value do
+								Purchase(gunAmmo)
+								task.wait(0.1)
+							end
+							GetGun()
+							camera.CameraSubject = Character
+							HAVOC.Stand.isBusy = false
+						end
+
+						if not HAVOC.Stand.isBusy and targetPlayer and targetPlayer.Character and gun.Ammo.Value == 0 and tonumber(InventoryFolder[gun.Name].Value) > 0 and OrbitGLOBAL.OrbitEnabled and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.GettingArmor then
+							HAVOC.Stand.isBusy = true
+							while targetPlayer and targetPlayer.Character and gun.Ammo.Value == 0 and tonumber(InventoryFolder[gun.Name].Value) > 0 and OrbitGLOBAL.OrbitEnabled and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.GettingArmor do
 								void()
 								task.wait()
 							end
 							HAVOC.Stand.isBusy = false
-						else
-							local upperTorsoPosition = targetPlayer.Character.UpperTorso.Position
-							local targetPosition = upperTorsoPosition + Vector3.new(0, 3, 0)
-							RootPart.CFrame = CFrame.new(targetPosition, targetPosition + Vector3.new(0, 0, -1))
-							ReplicatedStorage.MainEvent:FireServer("Stomp")
+						end
+						if targetPlayer and targetPlayer.Character and targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.Stand.isBusy and not HAVOC.GettingArmor then
+							if targetPlayer and targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('Dead').Value then
+								HAVOC.Stand.isBusy = true
+								while targetPlayer and targetPlayer.Character and OrbitGLOBAL.OrbitEnabled and targetPlayer.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value and not HAVOC.GettingArmor do
+									void()
+									task.wait()
+								end
+								HAVOC.Stand.isBusy = false
+							else
+								local upperTorsoPosition = targetPlayer.Character.UpperTorso.Position
+								local targetPosition = upperTorsoPosition + Vector3.new(0, 3, 0)
+								RootPart.CFrame = CFrame.new(targetPosition, targetPosition + Vector3.new(0, 0, -1))
+								ReplicatedStorage.MainEvent:FireServer("Stomp")
+							end
 						end
 					end
+				else
+					Purchase(gunModel)
 				end
-			else
-				Purchase(gunModel)
 			end
 		end
 	end)
@@ -8743,31 +8745,33 @@ local function C_272()
 	end
 
 	RunService.RenderStepped:Connect(function()
-		if HAVOC.Stand.GunType == "rifle" then
-			gunAmmo = rifleAmmo
-			gunModel = rifleModel
-		elseif HAVOC.Stand.GunType == "aug" then
-			gunAmmo = augAmmo
-			gunModel = augModel
-		end
-		if StandGLOBAL.KillAuraStand then
-			local targetPlayer = GetClosestPlayer()
-			if targetPlayer then
-				local gun = GetTool()
-				if not StandGLOBAL.isBusy then
-					ShootGun(targetPlayer)
-				end
-				if InventoryFolder[gun.Name].Value == "0" and gun.Ammo.Value == 0 and not Player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value then
-					StandGLOBAL.isBusy = true
-					while InventoryFolder[gun.Name].Value == "0" and gun.Ammo.Value == 0 and not Player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value do
-						Player.Character.Humanoid:UnequipTools()
-						camera.CameraSubject = gunAmmo.Head
-						camera.CFrame = CFrame.new(gunAmmo.Head.Position + Vector3.new(0, 1, 0), gunAmmo.Head.Position)
-						Purchase()
+		if HAVOC.Stand.StandMode then
+			if HAVOC.Stand.GunType == "rifle" then
+				gunAmmo = rifleAmmo
+				gunModel = rifleModel
+			elseif HAVOC.Stand.GunType == "aug" then
+				gunAmmo = augAmmo
+				gunModel = augModel
+			end
+			if StandGLOBAL.KillAuraStand then
+				local targetPlayer = GetClosestPlayer()
+				if targetPlayer then
+					local gun = GetTool()
+					if not StandGLOBAL.isBusy then
+						ShootGun(targetPlayer)
 					end
-					GetTool()
-					camera.CameraSubject = Character
-					StandGLOBAL.isBusy = false
+					if InventoryFolder[gun.Name].Value == "0" and gun.Ammo.Value == 0 and not Player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value then
+						StandGLOBAL.isBusy = true
+						while InventoryFolder[gun.Name].Value == "0" and gun.Ammo.Value == 0 and not Player.Character:WaitForChild("BodyEffects"):WaitForChild('K.O').Value do
+							Player.Character.Humanoid:UnequipTools()
+							camera.CameraSubject = gunAmmo.Head
+							camera.CFrame = CFrame.new(gunAmmo.Head.Position + Vector3.new(0, 1, 0), gunAmmo.Head.Position)
+							Purchase()
+						end
+						GetTool()
+						camera.CameraSubject = Character
+						StandGLOBAL.isBusy = false
+					end
 				end
 			end
 		end
