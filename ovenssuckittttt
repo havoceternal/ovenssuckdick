@@ -8204,7 +8204,9 @@ local function C_270()
 		if HAVOC.Stand.StandMode then
 			local gun = GetTool33()
 			local KOValue = player.Character:WaitForChild('BodyEffects')['K.O'].Value
-			if gun and KOValue ~= true then
+			if gun and gun.Name == "[Rifle]" and KOValue ~= true then
+				game:GetService("ReplicatedStorage"):FindFirstChild("MainEvent"):FireServer("Reload",gun)
+			elseif gun and gun.Name ~= "[Rifle]" and KOValue ~= true and gun.Ammo.Value < 1 then
 				game:GetService("ReplicatedStorage"):FindFirstChild("MainEvent"):FireServer("Reload",gun)
 			end
 			local MainAccountCharacter = workspace:FindFirstChild(StandGLOBAL.MainAccount, true)
